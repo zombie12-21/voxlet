@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voxlet</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234fa85a'/%3E%3Cpath d='M16 5l10 6v10l-10 6-10-6V11z' fill='%23356e3d'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div id="hud" hidden>
+  <div id="crosshair"></div>
+  <div id="mods">
+    <div id="m-fps" class="mod">0 FPS</div>
+    <div id="m-pos" class="mod">0, 0, 0</div>
+    <div id="m-cps" class="mod">0 CPS</div>
+    <div id="m-keys" class="mod"><span data-k="w">W</span><span data-k="a">A</span><span data-k="s">S</span><span data-k="d">D</span><span data-k="sp" class="wide">SPACE</span></div>
+  </div>
+  <div id="net" class="mod">offline</div>
+  <div id="hotbar"></div>
+  <div id="hint">Click to look around. Drag the mouse if the cursor is not captured.</div>
+  <div id="toast"></div>
+</div>
+
+<div id="menu" class="panel">
+  <svg class="logo" viewBox="0 0 48 48" aria-label="Voxlet logo" role="img" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+    <path d="M24 5l15 8.5v17L24 39 9 30.500v-17z"/><path d="M9 13.500L24 22l15-8.500M24 22v17"/>
+  </svg>
+  <h1>Voxlet</h1>
+  <p class="sub">An open-source block building sandbox.</p>
+  <form id="startForm">
+    <input id="nameInput" maxlength="16" placeholder="Your name" autocomplete="off" aria-label="Your name">
+    <button type="submit" id="playBtn">Play</button>
+  </form>
+  <details id="netBox" open>
+    <summary>Multiplayer</summary>
+    <input id="serverInput" placeholder="ws://localhost:8080" autocomplete="off" aria-label="Server address">
+    <p class="small">Leave empty for a solo world. Host your own server from the <code>server</code> folder.</p>
+  </details>
+  <dl class="keys">
+    <div><dt>WASD</dt><dd>Move</dd></div>
+    <div><dt>Space / double tap</dt><dd>Jump / fly</dd></div>
+    <div><dt>Click / right click</dt><dd>Break / place</dd></div>
+    <div><dt>1 – 9, wheel</dt><dd>Pick block</dd></div>
+    <div><dt>C (hold)</dt><dd>Zoom</dd></div>
+    <div><dt>M</dt><dd>Client menu</dd></div>
+  </dl>
+</div>
+
+<div id="modmenu" class="panel" hidden>
+  <h2>Client menu</h2>
+  <div id="modList"></div>
+  <label class="slider">Field of view <b id="fovV">75</b><input id="fov" type="range" min="50" max="110" value="75"></label>
+  <label class="slider">Render distance <b id="rdV">5</b><input id="rd" type="range" min="2" max="9" value="5"></label>
+  <label class="slider">Mouse sensitivity <b id="sensV">1.0</b><input id="sens" type="range" min="0.3" max="2.5" step="0.1" value="1"></label>
+  <button id="closeMods">Done</button>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

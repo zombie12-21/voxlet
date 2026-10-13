@@ -1,0 +1,10 @@
+{
+  "name": "voxlet-server",
+  "version": "1.0.0",
+  "description": "Small authoritative-ish relay server for Voxlet",
+  "type": "module",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "license": "MIT",
+  "dependencies": { "ws": "^8.18.0" }
+}
