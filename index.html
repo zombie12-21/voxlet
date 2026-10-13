@@ -7,10 +7,10 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%234fa85a'/%3E%3Cpath d='M16 5l10 6v10l-10 6-10-6V11z' fill='%23356e3d'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="title">
 <canvas id="gl"></canvas>
 
 <div id="hud" hidden>
@@ -26,32 +26,47 @@
   <div id="chat"><div id="chatLog"></div><input id="chatInput" maxlength="100" placeholder="Type a message or /help" autocomplete="off" aria-label="Chat" hidden></div>
   <div id="hotbar"></div>
   <div id="hint">Click to look around. Drag the mouse if the cursor is not captured.</div>
-  <div id="toast"></div>
 </div>
+<div id="toast"></div>
 
-<div id="menu" class="panel">
-  <svg class="logo" viewBox="0 0 48 48" aria-label="Voxlet logo" role="img" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
-    <path d="M24 5l15 8.5v17L24 39 9 30.500v-17z"/><path d="M9 13.500L24 22l15-8.500M24 22v17"/>
-  </svg>
-  <h1>Voxlet</h1>
-  <p class="sub">An open-source block building sandbox.</p>
+<div id="menu">
+  <header>
+    <svg class="logo" viewBox="0 0 48 48" aria-label="Voxlet logo" role="img" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round">
+      <path d="M24 5l15 8.5v17L24 39 9 30.500v-17z"/><path d="M9 13.500L24 22l15-8.500M24 22v17"/>
+    </svg>
+    <h1>Voxlet</h1>
+    <p class="tagline">Open source block sandbox<span>_</span></p>
+    <span class="badge">v1.1 · no cheats · self-hosted multiplayer</span>
+  </header>
   <form id="startForm">
-    <input id="nameInput" maxlength="16" placeholder="Your name" autocomplete="off" aria-label="Your name">
-    <button type="submit" id="playBtn">Play</button>
+    <input id="nameInput" maxlength="16" placeholder="Player name" autocomplete="off" aria-label="Player name">
+    <div class="cards">
+      <button type="submit" class="card" id="playBtn" data-mode="solo">
+        <span class="card-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M24 6l16 9v18l-16 9-16-9V15z"/><path d="M8 15l16 9 16-9M24 24v18"/></svg></span>
+        <span class="card-body"><b>Singleplayer</b><small>Your own world, generated fresh</small></span>
+      </button>
+      <button type="button" class="card" id="multiCard">
+        <span class="card-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><circle cx="16" cy="18" r="6"/><circle cx="33" cy="20" r="5"/><path d="M5 38c1-8 6-11 11-11s10 3 11 11M29 29c6-1 12 2 14 9"/></svg></span>
+        <span class="card-body"><b>Multiplayer</b><small>Join a server you host</small></span>
+      </button>
+      <button type="button" class="card" id="setCard">
+        <span class="card-icon"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 14h20M36 14h4M8 24h6M22 24h18M8 34h24M40 34h0"/><circle cx="32" cy="14" r="4"/><circle cx="18" cy="24" r="4"/><circle cx="36" cy="34" r="4"/></svg></span>
+        <span class="card-body"><b>Client menu</b><small>HUD modules and colors</small></span>
+      </button>
+    </div>
+    <div id="netRow" hidden>
+      <input id="serverInput" placeholder="ws://localhost:8080" autocomplete="off" aria-label="Server address">
+      <button type="submit" class="join" data-mode="multi">Join</button>
+    </div>
+    <p class="small" id="netNote" hidden>Host your own server from the <code>server</code> folder, then paste its address.</p>
   </form>
-  <details id="netBox" open>
-    <summary>Multiplayer</summary>
-    <input id="serverInput" placeholder="ws://localhost:8080" autocomplete="off" aria-label="Server address">
-    <p class="small">Leave empty for a solo world. Host your own server from the <code>server</code> folder.</p>
-  </details>
   <dl class="keys">
     <div><dt>WASD</dt><dd>Move</dd></div>
-    <div><dt>Space / double tap</dt><dd>Jump / fly</dd></div>
+    <div><dt>Space ×2</dt><dd>Fly</dd></div>
     <div><dt>Click / right click</dt><dd>Break / place</dd></div>
-    <div><dt>1 – 9, wheel</dt><dd>Pick block</dd></div>
-    <div><dt>C (hold)</dt><dd>Zoom</dd></div>
+    <div><dt>1 – 9</dt><dd>Pick block</dd></div>
+    <div><dt>T / B</dt><dd>Chat / waypoint</dd></div>
     <div><dt>M</dt><dd>Client menu</dd></div>
-    <div><dt>T / B</dt><dd>Chat and commands / waypoint</dd></div>
   </dl>
 </div>
 
@@ -59,7 +74,7 @@
   <h2>Client menu</h2>
   <div id="modList"></div>
   <div class="colors">
-    <label>Accent color <input type="color" id="accent" value="#58c26a"></label>
+    <label>Accent color <input type="color" id="accent" value="#e02828"></label>
     <label>Crosshair color <input type="color" id="xhair" value="#ffffff"></label>
   </div>
   <label class="slider">HUD scale <b id="hudV">1.0</b><input id="hudScale" type="range" min="0.7" max="1.5" step="0.1" value="1"></label>

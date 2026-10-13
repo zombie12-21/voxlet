@@ -1,6 +1,6 @@
-:root{--ink:#eef2ee;--muted:#a3b0a5;--panel:rgba(16,20,17,.9);--accent:#58c26a;--accent-ink:#06210c;--line:rgba(255,255,255,.14);--fd:'Chakra Petch',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif}
+:root{--ink:#eef2ee;--muted:#a3b0a5;--panel:rgba(16,20,17,.9);--accent:#e02828;--accent-ink:#ffffff;--line:rgba(255,255,255,.14);--fd:'Orbitron',system-ui,sans-serif;--fb:'Rajdhani',system-ui,sans-serif;--mono:'Share Tech Mono',monospace}
 *{box-sizing:border-box;margin:0}
-html,body{height:100%;overflow:hidden;background:#79b6e8;color:var(--ink);font-family:var(--fb);font-size:14px;-webkit-user-select:none;user-select:none}
+html,body{height:100%;overflow:hidden;background:#79b6e8;color:var(--ink);font-family:var(--fb);font-size:16px;-webkit-user-select:none;user-select:none}
 canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
 [hidden]{display:none!important}
 .panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,92vw);max-height:92vh;overflow:auto;padding:30px 28px;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(10px);text-align:center;z-index:20}
@@ -38,7 +38,7 @@ details input{margin-top:4px}
 .slot.sel{border-color:#fff;transform:translateY(-4px)}
 .slot b{position:absolute;left:3px;top:0;font-size:11px;text-shadow:0 1px 2px #000}
 #hint{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:rgba(0,0,0,.45);padding:6px 14px;border-radius:999px;font-size:13px;transition:opacity .4s}
-#toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);padding:8px 16px;border-radius:999px;background:var(--panel);border:1px solid var(--line);opacity:0;transition:opacity .25s}
+#toast{position:fixed;z-index:40;pointer-events:none;left:50%;top:60px;transform:translateX(-50%);padding:8px 16px;border-radius:999px;background:var(--panel);border:1px solid var(--line);opacity:0;transition:opacity .25s}
 #toast.on{opacity:1}
 #modmenu{text-align:left;pointer-events:auto}#modmenu h2{text-align:center}
 #modList{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
@@ -64,3 +64,39 @@ details input{margin-top:4px}
 .wp{position:absolute;transform:translate(-50%,-100%);text-align:center;font-family:var(--fd);font-weight:600;font-size:13px;text-shadow:0 1px 3px #000;white-space:nowrap}
 .wp::before{content:'';display:block;width:10px;height:10px;margin:0 auto 3px;background:currentColor;transform:rotate(45deg);border:2px solid #fff}
 .wp small{display:block;font-weight:500;opacity:.85}
+
+body.title canvas#gl{filter:saturate(.55) brightness(.5)}
+body.title::before{content:'';position:fixed;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.88) 100%)}
+body.title::after{content:'';position:fixed;inset:0;z-index:5;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.1) 2px,rgba(0,0,0,.1) 4px)}
+#menu{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:20px;overflow:auto}
+#menu header{text-align:center;margin-bottom:30px}
+#menu .logo{width:46px;height:46px;color:var(--accent);filter:drop-shadow(0 0 14px var(--accent));margin-bottom:6px}
+#menu h1{font-family:var(--fd);font-weight:900;font-size:clamp(38px,6vw,68px);letter-spacing:.12em;text-transform:uppercase;line-height:1;background:linear-gradient(135deg,#fff 0%,#ff7a7a 50%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tagline{font-family:var(--mono);font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:#8a8a8a;margin-top:10px}
+.tagline span{color:var(--accent);animation:blink 1.2s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--accent);border:1px solid #5a1010;padding:3px 10px;border-radius:2px;margin-top:14px;background:rgba(224,40,40,.08)}
+#startForm{display:flex;flex-direction:column;align-items:center;gap:18px;width:100%}
+#startForm #nameInput{flex:none;width:min(320px,90vw);text-align:center;background:rgba(8,8,8,.85);font-family:var(--fb);font-weight:600;letter-spacing:.06em}
+.cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+button.card{position:relative;width:240px;padding:0;background:rgba(10,10,10,.92);border:1px solid #222;border-radius:4px;overflow:hidden;text-align:left;color:var(--ink);font-family:var(--fb);transition:transform .25s cubic-bezier(.16,1,.3,1),border-color .25s}
+button.card::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .25s}
+button.card:hover,button.card.on{transform:translateY(-6px);border-color:#4a1212;filter:none}
+button.card:hover::before,button.card.on::before{opacity:1}
+.card-icon{display:flex;align-items:center;justify-content:center;height:110px;background:#0b0b0b;border-bottom:1px solid #1a1a1a;color:var(--accent)}
+.card-icon svg{width:56px;height:56px;filter:drop-shadow(0 0 12px rgba(224,40,40,.5));transition:transform .3s}
+button.card:hover .card-icon svg{transform:scale(1.12)}
+.card-body{display:block;padding:16px 18px 18px}
+.card-body b{display:block;font-family:var(--fd);font-size:15px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.card-body small{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:#8a8a8a;text-transform:uppercase}
+#netRow{display:flex;gap:8px;width:min(480px,92vw)}
+#netRow input{flex:1}
+#menu .small{text-align:center}
+#menu .keys{width:min(640px,92vw);grid-template-columns:repeat(3,1fr);margin-top:28px;text-align:center;border-top:1px solid #1d1d1d}
+#menu .keys div{align-items:center}
+#menu .keys dt{font-family:var(--mono);letter-spacing:.06em;color:var(--accent)}
+.panel{border-radius:6px}
+input[type=text],input:not([type]){border-radius:4px}
+#modmenu{z-index:30}
+@media(max-width:700px){#menu .keys{display:none}button.card{width:92vw}.card-icon{height:70px}}
+.card-body{min-height:84px}

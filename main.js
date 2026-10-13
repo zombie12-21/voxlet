@@ -384,6 +384,7 @@ canvas.addEventListener('touchmove', (e) => { const t = e.touches[0]; if (!touch
 canvas.addEventListener('touchend', () => { if (touchMoved < 8 && started) click('break'); touchLast = null; });
 
 function toggleMenu() {
+  if (!started) { $('modmenu').hidden = !$('modmenu').hidden; return; }
   menuOpen = !menuOpen; $('modmenu').hidden = !menuOpen;
   if (menuOpen) { try { document.exitPointerLock(); } catch (_) {} for (const k in keys) keys[k] = false; }
 }
@@ -571,25 +572,31 @@ let hintUntil = Infinity;
 async function start(name, server) {
   $('playBtn').disabled = true;
   if (server) {
-    $('playBtn').textContent = 'Connecting…';
     const ok = await net.connect(server, name);
-    if (!ok) { $('playBtn').disabled = false; $('playBtn').textContent = 'Play'; toast('Could not connect. Starting solo.'); $('menu').hidden = false; /* fall through to solo */ }
+    if (!ok) { $('playBtn').disabled = false; toast('Could not connect. Starting solo.'); $('menu').hidden = false; /* fall through to solo */ }
   } else world.seed = Math.floor(Math.random() * 1e6);
   // preload spawn area synchronously
   for (let dz = -2; dz <= 2; dz++) for (let dx = -2; dx <= 2; dx++) ensureChunk(dx, dz);
   for (const c of world.chunks.values()) if (c.dirty) { buildMesh(c); c.dirty = false; }
   let y = WH - 1; while (y > 0 && !getBlock(8, y, 8)) y--;
   player.x = 8.5; player.z = 8.5; player.y = y + 1.01; player.vy = 0;
-  $('menu').hidden = true; $('hud').hidden = false; $('playBtn').disabled = false; $('playBtn').textContent = 'Play';
+  $('menu').hidden = true; document.body.classList.remove('title'); $('hud').hidden = false; $('playBtn').disabled = false;
   started = true; applyMods(); buildHotbar(); buildModMenu();
   $('net').hidden = !net.on;
   hintUntil = performance.now() + 7000;
   if (net.on) $('net').textContent = `online · ${remotes.size + 1} player${remotes.size ? 's' : ''}`;
 }
+$('multiCard').addEventListener('click', () => {
+  const show = $('netRow').hidden; $('netRow').hidden = !show; $('netNote').hidden = !show; $('multiCard').classList.toggle('on', show);
+  if (show) $('serverInput').focus();
+});
+$('setCard').addEventListener('click', () => { buildModMenu(); applyMods(); $('modmenu').hidden = false; });
 $('startForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const name = ($('nameInput').value.trim() || 'Player').slice(0, 16);
-  let server = $('serverInput').value.trim();
+  const multi = e.submitter && e.submitter.dataset.mode === 'multi';
+  let server = multi ? $('serverInput').value.trim() : '';
+  if (multi && !server) { toast('Enter a server address'); $('serverInput').focus(); return; }
   if (server && !/^wss?:\/\//.test(server)) server = 'ws://' + server;
   start(name, server);
 });
