@@ -42,6 +42,9 @@ wss.on('connection', (ws) => {
       const x = num(m.x, -1e6, 1e6), y = num(m.y, -64, 256), z = num(m.z, -1e6, 1e6), yaw = num(m.yaw, -10, 10);
       if (x === null || y === null || z === null || yaw === null) return;
       Object.assign(p, { x, y, z, yaw }); broadcast({ t: 'pos', id, x, y, z, yaw }, id);
+    } else if (m.t === 'chat') {
+      const text = String(m.text || '').replace(/[\u0000-\u001f]/g, '').trim().slice(0, 100);
+      if (text) broadcast({ t: 'chat', name: p.name, text }, id);
     } else if (m.t === 'block') {
       const x = Number.isInteger(m.x) ? m.x : null, y = Number.isInteger(m.y) ? m.y : null, z = Number.isInteger(m.z) ? m.z : null;
       if (x === null || y === null || z === null || y < 0 || y >= WORLD_H) return;

@@ -4,6 +4,8 @@ An original, open-source block building sandbox that runs in the browser, with a
 
 All code, textures and the block world are original. The textures are generated in code at startup. Rendering uses [three.js](https://threejs.org) (MIT), bundled in `vendor/`. It contains no Mojang or Minecraft code or assets.
 
+Extras: waypoints (press B or `/waypoint add <name>`), a chat and command bar (press T), accent and crosshair color pickers, and HUD scale.
+
 There are no cheat features. The server validates block edits (reach, bounds, block ids) and rate-limits messages.
 
 ## Play solo
@@ -35,6 +37,8 @@ Then enter `ws://YOUR-HOST:8080` in the Multiplayer box on the title screen. Put
 | 1 to 9, mouse wheel | Choose block |
 | C (hold) | Zoom |
 | M | Client menu |
+| T, / | Chat and commands (`/help`) |
+| B | Add a waypoint |
 
 If the browser blocks cursor capture (for example inside an embedded frame), hold the left mouse button and drag to look; a click without movement breaks a block.
 

@@ -242,6 +242,7 @@ function buildModMenu() {
     l.appendChild(d);
   }
 }
+$('hudScale').addEventListener('input', (e) => { $('hud').style.setProperty('--hs', e.target.value); $('hudV').textContent = (+e.target.value).toFixed(1); });
 for (const [id, key, fmt] of [['fov', 'fov', v => v], ['rd', 'rd', v => v], ['sens', 'sens', v => (+v).toFixed(1)]]) {
   $(id).addEventListener('input', (e) => { settings[key] = +e.target.value; $(id + 'V').textContent = fmt(e.target.value); applyFog(); });
 }
@@ -335,9 +336,12 @@ function click(kind) {
 // input events
 const GAME_KEYS = new Set(['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space', 'ShiftLeft', 'ShiftRight', 'KeyC']);
 window.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
+  if (e.target.tagName === 'INPUT' && e.target.type !== 'range' && e.target.type !== 'color') return;
   if (!started) return;
   if (e.code === 'KeyM') { toggleMenu(); e.preventDefault(); return; }
+  if (e.code === 'KeyT' && !menuOpen) { e.preventDefault(); openChat(); return; }
+  if (e.code === 'Slash' && !menuOpen) { e.preventDefault(); openChat('/'); return; }
+  if (e.code === 'KeyB' && !menuOpen) { const w = addWaypoint('', player.x, player.y + 1, player.z); addMsg('Waypoint added: ' + w.name, 'sys'); return; }
   if (menuOpen) return;
   if (GAME_KEYS.has(e.code)) e.preventDefault();
   if (e.repeat) return;
@@ -442,10 +446,73 @@ const net = {
         else if (m.t === 'leave') { const r = remotes.get(m.id); if (r) { scene.remove(r.g); remotes.delete(m.id); } }
         else if (m.t === 'pos') { const r = remotes.get(m.id); if (r) { r.tx = m.x; r.ty = m.y; r.tz = m.z; r.yaw = m.yaw; } }
         else if (m.t === 'block') setBlock(m.x, m.y, m.z, m.b);
+        else if (m.t === 'chat') addMsg(`<${String(m.name).slice(0, 16)}> ${String(m.text).slice(0, 100)}`);
       };
     });
   },
 };
+
+// ---------------------------------------------------------------- chat, commands, waypoints
+const waypoints = [];
+const WP_COLORS = ['#ff6b6b', '#ffd166', '#06d6a0', '#4cc9f0', '#c77dff', '#ff9f1c'];
+function addMsg(text, cls = '') {
+  const log = $('chatLog'), d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; log.appendChild(d);
+  while (log.children.length > 12) log.removeChild(log.firstChild);
+  setTimeout(() => d.classList.add('old'), 8000);
+}
+function addWaypoint(name, x, y, z) {
+  name = (name || 'Waypoint ' + (waypoints.length + 1)).slice(0, 16);
+  waypoints.push({ name, x, y, z, color: WP_COLORS[waypoints.length % WP_COLORS.length], el: Object.assign(document.createElement('div'), { className: 'wp' }) });
+  const w = waypoints[waypoints.length - 1]; w.el.style.color = w.color; w.el.innerHTML = `${name}<small></small>`; $('wps').appendChild(w.el);
+  return w;
+}
+function runCommand(line) {
+  const [cmd, ...a] = line.slice(1).trim().split(/\s+/); const sys = (t) => addMsg(t, 'sys');
+  switch ((cmd || '').toLowerCase()) {
+    case 'help': sys('Commands: /waypoint add|remove|list, /color #rrggbb, /fov n, /fly, /clear, /pos'); break;
+    case 'pos': sys(`You are at ${player.x.toFixed(1)}, ${player.y.toFixed(1)}, ${player.z.toFixed(1)}`); break;
+    case 'fly': player.fly = !player.fly; player.vy = 0; sys(player.fly ? 'Flying on' : 'Flying off'); break;
+    case 'clear': $('chatLog').innerHTML = ''; break;
+    case 'fov': { const v = clamp(+a[0] || 75, 50, 110); settings.fov = v; $('fov').value = v; $('fovV').textContent = v; sys('Field of view ' + v); break; }
+    case 'color': { if (/^#[0-9a-f]{6}$/i.test(a[0] || '')) { setAccent(a[0]); sys('Accent color set'); } else sys('Usage: /color #58c26a'); break; }
+    case 'waypoint': case 'wp': {
+      const sub = (a[0] || 'list').toLowerCase();
+      if (sub === 'add') { const w = addWaypoint(a.slice(1).join(' '), player.x, player.y + 1, player.z); sys('Waypoint added: ' + w.name); }
+      else if (sub === 'remove') { const n = a.slice(1).join(' ').toLowerCase(); const i = waypoints.findIndex(w => w.name.toLowerCase() === n); if (i < 0) sys('No waypoint named that'); else { waypoints[i].el.remove(); waypoints.splice(i, 1); sys('Waypoint removed'); } }
+      else if (sub === 'list') sys(waypoints.length ? waypoints.map(w => `${w.name} (${w.x.toFixed(0)}, ${w.y.toFixed(0)}, ${w.z.toFixed(0)})`).join(' | ') : 'No waypoints yet. Press B to add one.');
+      else sys('Usage: /waypoint add <name> | remove <name> | list');
+      break;
+    }
+    default: sys('Unknown command. Try /help');
+  }
+}
+function openChat(prefill = '') {
+  if (!started || menuOpen) return; const i = $('chatInput'); $('chat').classList.add('open'); i.hidden = false; i.value = prefill; i.focus();
+  for (const k in keys) keys[k] = false; try { document.exitPointerLock(); } catch (_) {}
+}
+function closeChat() { const i = $('chatInput'); i.hidden = true; i.blur(); $('chat').classList.remove('open'); }
+$('chatInput').addEventListener('keydown', (e) => {
+  e.stopPropagation();
+  if (e.key === 'Escape') { closeChat(); return; }
+  if (e.key !== 'Enter') return;
+  const v = $('chatInput').value.trim(); closeChat(); if (!v) return;
+  if (v[0] === '/') runCommand(v); else { addMsg(`<${$('nameInput').value.trim() || 'Player'}> ${v}`); net.send({ t: 'chat', text: v }); }
+});
+function setAccent(hex) { document.documentElement.style.setProperty('--accent', hex); $('accent').value = hex; }
+$('accent').addEventListener('input', (e) => setAccent(e.target.value));
+$('xhair').addEventListener('input', (e) => document.documentElement.style.setProperty('--xh', e.target.value));
+const _v = new THREE.Vector3();
+function updateWaypoints() {
+  for (const w of waypoints) {
+    _v.set(w.x, w.y, w.z).project(camera);
+    const vis = _v.z < 1 && Math.abs(_v.x) < 1.05 && Math.abs(_v.y) < 1.05;
+    w.el.style.display = vis ? 'block' : 'none';
+    if (vis) {
+      w.el.style.left = ((_v.x + 1) / 2 * window.innerWidth) + 'px'; w.el.style.top = ((1 - _v.y) / 2 * window.innerHeight) + 'px';
+      w.el.lastChild.textContent = Math.round(Math.hypot(w.x - player.x, w.y - player.y, w.z - player.z)) + ' m';
+    }
+  }
+}
 
 // ---------------------------------------------------------------- loop
 let fpsAcc = 0, fpsN = 0, lastT = performance.now(), fovCur = 75;
@@ -483,6 +550,7 @@ function frame(now) {
   for (const r of remotes.values()) { r.g.position.x += (r.tx - r.g.position.x) * Math.min(1, dt * 12); r.g.position.y += (r.ty - r.g.position.y) * Math.min(1, dt * 12); r.g.position.z += (r.tz - r.g.position.z) * Math.min(1, dt * 12); r.g.rotation.y = r.yaw; }
   // net
   if (net.on && now - net.last > 80) { net.last = now; net.send({ t: 'pos', x: +player.x.toFixed(2), y: +player.y.toFixed(2), z: +player.z.toFixed(2), yaw: +player.yaw.toFixed(2) }); }
+  updateWaypoints();
   // hud
   fpsAcc += dt; fpsN++;
   if (fpsAcc >= 0.5) {

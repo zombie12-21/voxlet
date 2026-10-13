@@ -21,11 +21,11 @@ summary{cursor:pointer;margin-bottom:8px}
 details input{margin-top:4px}
 .keys{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line);text-align:left}
 .keys div{display:flex;flex-direction:column;gap:2px}.keys dt{font-weight:600;font-size:13px}.keys dd{color:var(--muted);font-size:13px;margin:0}
-#hud{position:fixed;inset:0;pointer-events:none;z-index:10;font-variant-numeric:tabular-nums}
+#hud{--hs:1;position:fixed;inset:0;pointer-events:none;z-index:10;font-variant-numeric:tabular-nums}
 #crosshair{position:absolute;left:50%;top:50%;width:22px;height:22px;transform:translate(-50%,-50%)}
-#crosshair::before,#crosshair::after{content:'';position:absolute;background:#fff;mix-blend-mode:difference}
+#crosshair::before,#crosshair::after{content:'';position:absolute;background:var(--xh,#fff);mix-blend-mode:difference}
 #crosshair::before{left:10px;top:0;width:2px;height:22px}#crosshair::after{top:10px;left:0;height:2px;width:22px}
-#mods{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+#mods{position:absolute;left:12px;top:12px;transform:scale(var(--hs));transform-origin:top left;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .mod{background:rgba(0,0,0,.45);padding:5px 10px;border-radius:8px;font-family:var(--fd);font-weight:600;font-size:14px}
 #net{position:absolute;right:12px;top:12px}
 #m-keys{display:grid;grid-template-columns:repeat(3,34px);gap:4px;padding:6px;background:none}
@@ -33,7 +33,7 @@ details input{margin-top:4px}
 #m-keys span[data-k=w]{grid-column:2;grid-row:1}#m-keys span[data-k=a]{grid-column:1;grid-row:2}#m-keys span[data-k=s]{grid-column:2;grid-row:2}#m-keys span[data-k=d]{grid-column:3;grid-row:2}
 #m-keys span.wide{grid-column:1/4;grid-row:3;height:24px;font-size:11px}
 #m-keys span.on{background:rgba(255,255,255,.75);color:#111}
-#hotbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:4px;padding:5px;background:rgba(0,0,0,.45);border-radius:10px}
+#hotbar{position:absolute;left:50%;bottom:14px;transform:translateX(-50%) scale(var(--hs));transform-origin:bottom center;display:flex;gap:4px;padding:5px;background:rgba(0,0,0,.45);border-radius:10px}
 .slot{width:48px;height:48px;border:3px solid rgba(255,255,255,.25);border-radius:6px;position:relative;background-size:cover;image-rendering:pixelated}
 .slot.sel{border-color:#fff;transform:translateY(-4px)}
 .slot b{position:absolute;left:3px;top:0;font-size:11px;text-shadow:0 1px 2px #000}
@@ -50,3 +50,17 @@ details input{margin-top:4px}
 .slider input{width:100%;margin-top:6px;accent-color:var(--accent)}
 #closeMods{width:100%;margin-top:6px}
 @media(max-width:700px){.keys{display:none}.slot{width:36px;height:36px}}
+
+.colors{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.colors label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:10px;background:#0c0f0d;border:1px solid var(--line);color:var(--muted);font-size:13px}
+.colors input{width:34px;height:26px;padding:0;border:0;background:none;cursor:pointer}
+#chat{position:absolute;left:12px;bottom:84px;width:min(420px,60vw);pointer-events:none}
+#chatLog{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.msg{background:rgba(0,0,0,.45);padding:3px 8px;border-radius:6px;width:fit-content;max-width:100%;overflow-wrap:anywhere;transition:opacity .6s}
+.msg.old{opacity:0}.msg.sys{color:var(--accent)}
+#chat.open .msg.old{opacity:1}
+#chatInput{pointer-events:auto;margin-top:6px;padding:8px 12px;font-size:14px;border-radius:8px}
+#wps{position:absolute;inset:0;overflow:hidden}
+.wp{position:absolute;transform:translate(-50%,-100%);text-align:center;font-family:var(--fd);font-weight:600;font-size:13px;text-shadow:0 1px 3px #000;white-space:nowrap}
+.wp::before{content:'';display:block;width:10px;height:10px;margin:0 auto 3px;background:currentColor;transform:rotate(45deg);border:2px solid #fff}
+.wp small{display:block;font-weight:500;opacity:.85}

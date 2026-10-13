@@ -22,6 +22,8 @@
     <div id="m-keys" class="mod"><span data-k="w">W</span><span data-k="a">A</span><span data-k="s">S</span><span data-k="d">D</span><span data-k="sp" class="wide">SPACE</span></div>
   </div>
   <div id="net" class="mod">offline</div>
+  <div id="wps"></div>
+  <div id="chat"><div id="chatLog"></div><input id="chatInput" maxlength="100" placeholder="Type a message or /help" autocomplete="off" aria-label="Chat" hidden></div>
   <div id="hotbar"></div>
   <div id="hint">Click to look around. Drag the mouse if the cursor is not captured.</div>
   <div id="toast"></div>
@@ -49,12 +51,18 @@
     <div><dt>1 – 9, wheel</dt><dd>Pick block</dd></div>
     <div><dt>C (hold)</dt><dd>Zoom</dd></div>
     <div><dt>M</dt><dd>Client menu</dd></div>
+    <div><dt>T / B</dt><dd>Chat and commands / waypoint</dd></div>
   </dl>
 </div>
 
 <div id="modmenu" class="panel" hidden>
   <h2>Client menu</h2>
   <div id="modList"></div>
+  <div class="colors">
+    <label>Accent color <input type="color" id="accent" value="#58c26a"></label>
+    <label>Crosshair color <input type="color" id="xhair" value="#ffffff"></label>
+  </div>
+  <label class="slider">HUD scale <b id="hudV">1.0</b><input id="hudScale" type="range" min="0.7" max="1.5" step="0.1" value="1"></label>
   <label class="slider">Field of view <b id="fovV">75</b><input id="fov" type="range" min="50" max="110" value="75"></label>
   <label class="slider">Render distance <b id="rdV">5</b><input id="rd" type="range" min="2" max="9" value="5"></label>
   <label class="slider">Mouse sensitivity <b id="sensV">1.0</b><input id="sens" type="range" min="0.3" max="2.5" step="0.1" value="1"></label>
